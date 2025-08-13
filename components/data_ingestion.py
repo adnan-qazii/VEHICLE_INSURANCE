@@ -3,7 +3,6 @@ import os
 import sys
 from data_acess.data_acess import DataAccess
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from exception import MyException
 from dotenv import load_dotenv
