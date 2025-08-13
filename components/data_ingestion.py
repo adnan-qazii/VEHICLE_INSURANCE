@@ -21,7 +21,7 @@ class DataIngestion:
 		try:
 			logging.info(f"Fetching data from MongoDB collection: {self.collection_name}")
 			data_access = DataAccess()
-			df = data_access.export_collection_as_dataframe(collection_name=self.collection_name)
+			df = data_access.fetch_data(collection_name=self.collection_name)
 			logging.info(f"Fetched data shape: {df.shape}")
 			raw_dir = os.path.join("data", "raw")
 			os.makedirs(raw_dir, exist_ok=True)

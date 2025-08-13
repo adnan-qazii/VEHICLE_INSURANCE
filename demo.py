@@ -58,3 +58,9 @@ print(df.head())
 
 
 
+#test data ingestion
+from components.data_ingestion import DataIngestion
+
+
+exp= DataIngestion()
+exp.run()
