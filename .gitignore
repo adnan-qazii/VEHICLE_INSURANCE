@@ -87,3 +87,5 @@ dmypy.json
 logs/
 
 data/
+
+artifacts/

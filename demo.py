@@ -70,11 +70,10 @@ exp.run()
 
 
 # testing training pipeline
-'''
+
 from logger import logging
 from pipeline.training_pipeline import TrainingPipeline
 logging.info("Starting training pipeline")
 start= TrainingPipeline()
 start.start_data_ingestion()
 logging.info("Training pipeline completed")
-'''

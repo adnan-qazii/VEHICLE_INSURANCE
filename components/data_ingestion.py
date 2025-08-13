@@ -11,10 +11,14 @@ from constants import train_test_split_ratio
 load_dotenv()
 
 
+import datetime
+
 class DataIngestion:
 	def __init__(self):
 		self.collection_name = os.getenv("COLLECTION_NAME")
 		self.train_test_split_ratio = train_test_split_ratio
+		self.timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+		self.base_dir = os.path.join("artifacts", self.timestamp, "dataingestion")
 
 	def fetch_and_save_raw_data(self) -> pd.DataFrame:
 		try:
@@ -22,7 +26,7 @@ class DataIngestion:
 			data_access = DataAccess()
 			df = data_access.fetch_data(collection_name=self.collection_name)
 			logging.info(f"Fetched data shape: {df.shape}")
-			raw_dir = os.path.join("data", "raw")
+			raw_dir = os.path.join(self.base_dir, "raw")
 			os.makedirs(raw_dir, exist_ok=True)
 			raw_file_path = os.path.join(raw_dir, "raw_data.csv")
 			df.to_csv(raw_file_path, index=False, header=True)
@@ -35,8 +39,9 @@ class DataIngestion:
 	def split_and_save_train_test(self, df: pd.DataFrame):
 		try:
 			train_set, test_set = train_test_split(df, test_size=self.train_test_split_ratio)
-			train_dir = os.path.join("data", "preprocessed", "train")
-			test_dir = os.path.join("data", "preprocessed", "test")
+			split_dir = os.path.join(self.base_dir, "split")
+			train_dir = os.path.join(split_dir, "train")
+			test_dir = os.path.join(split_dir, "test")
 			os.makedirs(train_dir, exist_ok=True)
 			os.makedirs(test_dir, exist_ok=True)
 			train_file_path = os.path.join(train_dir, "train.csv")
