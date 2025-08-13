@@ -18,5 +18,26 @@ except Exception as e:
     '''
 
 
+# checking data base mongo db connection
+'''
+import os
+from dotenv import load_dotenv
+from logger import logging
+from configration.mongo_db_connection import MongoDBConnection
+
+
+mongo_db_connection = MongoDBConnection()
+
+
+# Choose the collection name you want to query
+collection_name = os.getenv("COLLECTION_NAME")
+
+# Fetch first 10 documents
+documents = mongo_db_connection.db[collection_name].find().limit(10)
+
+# Print them
+for doc in documents:
+    logging.info(doc)
+    '''
 
 
