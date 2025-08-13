@@ -1,0 +1,6 @@
+1-> create virtual env first
+                                       (python -m venv env)
+
+2-> activate the virtual env            (env\Scripts\activate)
+
+3-> 
