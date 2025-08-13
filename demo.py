@@ -40,4 +40,21 @@ for doc in documents:
     logging.info(doc)
     '''
 
+#checking data acess 
+'''
+from logger import logging
+from data_acess.data_acess import DataAccess
+logging.info("Starting data access operation")
+data = DataAccess()
+logging.info("Data access operation completed")
+
+
+data=DataAccess()
+df=data.fetch_data("Proj1_Data")
+
+print(df.shape)
+print(df.head())
+'''
+
+
 

@@ -16,7 +16,7 @@ class MongoDBConnection:
             self.client = pymongo.MongoClient(
                 os.getenv("CONNECTION_URL"),
                 tls=True,
-                tlsCAFile=os.getenv("TLS_CA_FILE")  # path from env
+                tlsCAFile=certifi.where()  # path from env
             )
             self.db = self.client[os.getenv("DB_NAME")]
             logging.info(
