@@ -52,6 +52,28 @@ class PredictionPipeline:
 				input_df = func(input_df)
 			logging.info("Custom transformations applied to input data")
 
+			# Get expected columns from training transformation
+			input_feature_train_df = dt.train_df.drop(columns=[read_yaml_file("schema.yaml").get("target_column")], axis=1)
+			for func in [dt._map_gender_column, dt._drop_id_column, dt._create_dummy_columns, dt._rename_columns]:
+				input_feature_train_df = func(input_feature_train_df)
+			expected_columns = input_feature_train_df.columns.tolist()
+
+			# Add missing columns with default value 0
+			missing_cols = set(expected_columns) - set(input_df.columns)
+			if missing_cols:
+				logging.warning(f"Missing columns in input: {missing_cols}. Filling with default 0 values.")
+				for col in missing_cols:
+					input_df[col] = 0
+
+			# Remove extra columns
+			extra_cols = set(input_df.columns) - set(expected_columns)
+			if extra_cols:
+				logging.info(f"Extra columns in input: {extra_cols}. Dropping them.")
+				input_df = input_df.drop(columns=list(extra_cols))
+
+			# Reorder columns to match expected order
+			input_df = input_df[expected_columns]
+
 			# Transform input data
 			input_arr = preprocessor.transform(input_df)
 			logging.info("Input data transformed")
