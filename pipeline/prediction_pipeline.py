@@ -1,3 +1,4 @@
+
 import os
 import sys
 import pandas as pd
@@ -5,6 +6,7 @@ import joblib
 from logger import logging
 from exception import MyException
 from components.data_transformation import DataTransformation
+from utils.main_utils import read_yaml_file
 
 class PredictionPipeline:
 	def __init__(self):
@@ -13,6 +15,7 @@ class PredictionPipeline:
 	def predict_from_df(self, input_df: pd.DataFrame):
 		"""
 		Accepts input data as a pandas DataFrame, applies transformations, and returns predictions.
+		If preprocessor.pkl is not available, fits the preprocessor on training data.
 		"""
 		try:
 			# Find latest timestamp
@@ -30,12 +33,21 @@ class PredictionPipeline:
 				raise FileNotFoundError(f"Model not found at {model_path}")
 			model = joblib.load(model_path)
 
-			# Load preprocessor from DataTransformation
+			# Try to load fitted preprocessor
+			preprocessor_path = os.path.join(transformation_dir, "preprocessor.pkl")
 			dt = DataTransformation()
-			dt.prepare_data_transformation()  # loads schema
-			preprocessor = dt.get_data_transformer_object()
+			dt.prepare_data_transformation()  # loads schema and train/test
+			if os.path.exists(preprocessor_path):
+				preprocessor = joblib.load(preprocessor_path)
+			else:
+				# Fit preprocessor on training data if pickle not available
+				preprocessor = dt.get_data_transformer_object()
+				input_feature_train_df = dt.train_df.drop(columns=[read_yaml_file("schema.yaml").get("target_column")], axis=1)
+				for func in [dt._map_gender_column, dt._drop_id_column, dt._create_dummy_columns, dt._rename_columns]:
+					input_feature_train_df = func(input_feature_train_df)
+				preprocessor.fit(input_feature_train_df)
 
-			# Apply custom transformations
+			# Apply custom transformations to input
 			for func in [dt._map_gender_column, dt._drop_id_column, dt._create_dummy_columns, dt._rename_columns]:
 				input_df = func(input_df)
 			logging.info("Custom transformations applied to input data")
