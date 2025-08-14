@@ -212,4 +212,6 @@ class DataTransformation:
             raise MyException(e, sys)
 
 
+    def run(self):
+        self.initiate_data_transformation()
         
