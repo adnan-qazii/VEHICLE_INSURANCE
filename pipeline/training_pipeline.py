@@ -45,8 +45,8 @@ class TrainingPipeline:
     def run(self) -> None:
         """Run the full training pipeline in order."""
         logging.info("Training pipeline started")
-        self.start_data_ingestion()
-        self.start_data_validation()
+        #self.start_data_ingestion()
+        #self.start_data_validation()
         self.start_data_transformation()
         logging.info("Training pipeline finished successfully")
 

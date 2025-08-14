@@ -199,9 +199,8 @@ class DataTransformation:
             timestamps = [d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))]
             latest_timestamp = sorted(timestamps)[-1]
             transformation_dir = os.path.join(base_dir, latest_timestamp, "data_transformation")
-            csv_dir = os.path.join(transformation_dir, "csv")
+
             os.makedirs(transformation_dir, exist_ok=True)
-            os.makedirs(csv_dir, exist_ok=True)
             train_np_path = os.path.join(transformation_dir, "train.npy")
             test_np_path = os.path.join(transformation_dir, "test.npy")
             np.save(train_np_path, train_arr)
@@ -209,16 +208,36 @@ class DataTransformation:
             logging.info(f"Saved train numpy array at: {train_np_path}")
             logging.info(f"Saved test numpy array at: {test_np_path}")
 
-            # Save transformed train and test as CSV
-            train_csv_path = os.path.join(csv_dir, "train_transformed.csv")
-            test_csv_path = os.path.join(csv_dir, "test_transformed.csv")
-            pd.DataFrame(train_arr).to_csv(train_csv_path, index=False)
-            pd.DataFrame(test_arr).to_csv(test_csv_path, index=False)
-            logging.info(f"Saved transformed train CSV at: {train_csv_path}")
-            logging.info(f"Saved transformed test CSV at: {test_csv_path}")
+            # Build column names for transformed data
+            feature_names = []
+            try:
+                feature_names = preprocessor.named_steps['preprocessor'].get_feature_names_out()
+            except Exception:
+                feature_names = input_feature_train_df.columns.astype(str).tolist()
+            train_columns = list(feature_names) + [target_feature_train_df.name]
+            test_columns = list(feature_names) + [target_feature_test_df.name]
+
+            # Save a data transformation report (YAML) with details
+            report = {
+                "train_numpy_path": train_np_path,
+                "test_numpy_path": test_np_path,
+                "train_shape": train_arr.shape,
+                "test_shape": test_arr.shape,
+                "train_columns": train_columns,
+                "test_columns": test_columns,
+                "train_dtype": str(train_arr.dtype),
+                "test_dtype": str(test_arr.dtype)
+            }
+            import yaml
+            report_path = os.path.join(transformation_dir, "data_transformation_report.yaml")
+            with open(report_path, "w") as f:
+                yaml.dump(report, f)
+            logging.info(f"Saved data transformation report at: {report_path}")
+
+           
 
             logging.info("Data transformation completed successfully")
-            return train_np_path, test_np_path, train_csv_path, test_csv_path
+            return train_np_path, test_np_path
         except Exception as e:
             logging.error(f"Error in initiate_data_transformation: {e}")
             raise MyException(e, sys)
