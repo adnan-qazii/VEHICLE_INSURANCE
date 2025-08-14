@@ -100,6 +100,13 @@ val.validate_number_of_columns()
 val = TrainingPipeline()
 val.start_data_validation()
 '''
+  
 
 
+
+  #testing training pipeline
+from pipeline.training_pipeline import TrainingPipeline
+
+run=TrainingPipeline()
+run.run()
 
