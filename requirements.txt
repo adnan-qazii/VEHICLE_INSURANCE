@@ -5,5 +5,5 @@ certifi
 numpy 
 pandas
 scikit-learn
-yaml
+pyyaml
 dill
