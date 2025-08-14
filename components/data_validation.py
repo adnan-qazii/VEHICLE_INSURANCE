@@ -114,3 +114,9 @@ class DataValidation:
         except Exception as e:
             logging.error(f"Exception during validation: {e}")
             raise MyException(e, sys)
+
+
+    def run(self):
+        self.validate_number_of_columns()
+
+        
