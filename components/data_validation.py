@@ -46,71 +46,71 @@ class DataValidation:
 
 
 
-def validate_number_of_columns(self) -> bool:
-    """
-    Validates that BOTH train and test have:
-    1. Same number of columns as schema.yaml
-    2. Same column names as schema.yaml
-    3. All required numerical & categorical columns present
-    """
-    try:
-        schema = read_yaml_file("schema.yaml")
+    def validate_number_of_columns(self) -> bool:
+        """
+        Validates that BOTH train and test have:
+        1. Same number of columns as schema.yaml
+        2. Same column names as schema.yaml
+        3. All required numerical & categorical columns present
+        """
+        try:
+            schema = read_yaml_file("schema.yaml")
 
-        # Get all columns from schema (support list or dict)
-        schema_columns = schema.get("columns", [])
-        if isinstance(schema_columns, dict):
-            schema_columns = list(schema_columns.keys())
-        elif isinstance(schema_columns, list):
-            # Handle list of dicts: [{col: type}, {col: type}]
-            if all(isinstance(c, dict) for c in schema_columns):
-                schema_columns = [list(c.keys())[0] for c in schema_columns]
-        if not schema_columns:
-            logging.error("No 'columns' found in schema.yaml.")
-            return False
+            # Get all columns from schema (support list or dict)
+            schema_columns = schema.get("columns", [])
+            if isinstance(schema_columns, dict):
+                schema_columns = list(schema_columns.keys())
+            elif isinstance(schema_columns, list):
+                # Handle list of dicts: [{col: type}, {col: type}]
+                if all(isinstance(c, dict) for c in schema_columns):
+                    schema_columns = [list(c.keys())[0] for c in schema_columns]
+            if not schema_columns:
+                logging.error("No 'columns' found in schema.yaml.")
+                return False
 
-        numerical_columns   = schema.get("numerical_columns", [])
-        categorical_columns = schema.get("categorical_columns", [])
+            numerical_columns   = schema.get("numerical_columns", [])
+            categorical_columns = schema.get("categorical_columns", [])
 
-        if not numerical_columns and not categorical_columns:
-            logging.error("No 'numerical_columns' or 'categorical_columns' found in schema.yaml.")
-            return False
+            if not numerical_columns and not categorical_columns:
+                logging.error("No 'numerical_columns' or 'categorical_columns' found in schema.yaml.")
+                return False
 
-        status = True
-        for df_name, df in zip(["train", "test"], [self.train_df, self.test_df]):
-            df_cols = list(df.columns)
+            status = True
+            for df_name, df in zip(["train", "test"], [self.train_df, self.test_df]):
+                df_cols = list(df.columns)
 
-            # 1. Check number of columns
-            if len(df_cols) != len(schema_columns):
-                logging.error(f"[{df_name}] Column count mismatch: expected {len(schema_columns)}, got {len(df_cols)}")
-                status = False
+                # 1. Check number of columns
+                if len(df_cols) != len(schema_columns):
+                    logging.error(f"[{df_name}] Column count mismatch: expected {len(schema_columns)}, got {len(df_cols)}")
+                    status = False
 
-            # 2. Check exact column names match
-            if set(df_cols) != set(schema_columns):
-                missing_in_df = list(set(schema_columns) - set(df_cols))
-                extra_in_df   = list(set(df_cols) - set(schema_columns))
-                if missing_in_df:
-                    logging.warning(f"[{df_name}] Missing columns: {missing_in_df}")
-                if extra_in_df:
-                    logging.warning(f"[{df_name}] Extra columns: {extra_in_df}")
-                status = False
+                # 2. Check exact column names match
+                if set(df_cols) != set(schema_columns):
+                    missing_in_df = list(set(schema_columns) - set(df_cols))
+                    extra_in_df   = list(set(df_cols) - set(schema_columns))
+                    if missing_in_df:
+                        logging.warning(f"[{df_name}] Missing columns: {missing_in_df}")
+                    if extra_in_df:
+                        logging.warning(f"[{df_name}] Extra columns: {extra_in_df}")
+                    status = False
 
-            # 3. Check numerical & categorical columns separately
-            missing_num = [c for c in numerical_columns if c not in df_cols]
-            missing_cat = [c for c in categorical_columns if c not in df_cols]
+                # 3. Check numerical & categorical columns separately
+                missing_num = [c for c in numerical_columns if c not in df_cols]
+                missing_cat = [c for c in categorical_columns if c not in df_cols]
 
-            if missing_num:
-                logging.warning(f"[{df_name}] Missing numerical columns: {missing_num}")
-                status = False
-            if missing_cat:
-                logging.warning(f"[{df_name}] Missing categorical columns: {missing_cat}")
-                status = False
+                if missing_num:
+                    logging.warning(f"[{df_name}] Missing numerical columns: {missing_num}")
+                    status = False
+                if missing_cat:
+                    logging.warning(f"[{df_name}] Missing categorical columns: {missing_cat}")
+                    status = False
 
-        if status:
-            logging.info("✔ Both train and test match schema column count, names, and required types.")
-        else:
-            logging.error("✘ Train or test failed schema column validation.")
-        return status
+            if status:
+                logging.info("✔ Both train and test match schema column count, names, and required types.")
+            else:
+                logging.error("✘ Train or test failed schema column validation.")
+            return status
 
-    except Exception as e:
-        logging.error(f"Exception during validation: {e}")
-        raise MyException(e, sys)
+        except Exception as e:
+            logging.error(f"Exception during validation: {e}")
+            raise MyException(e, sys)
