@@ -34,5 +34,15 @@ class DataValidation:
             raise MyException(e, sys)
 
 
-adnan = DataValidation()
+    def validate_number_of_columns(self,dataframe :pd.DataFrame)-> bool:
+        try:
+            logging.info("Validating train and test data.")
+            if self.train_df.empty or self.test_df.empty:
+                logging.error("Train or test DataFrame is empty.")
+                raise ValueError("Train or test DataFrame is empty.")
+            # Add more validation checks as needed
+            logging.info("Data validation completed successfully.")
+        except Exception as e:
+            logging.error(f"Error during data validation: {e}")
+            raise MyException(e, sys)
 
