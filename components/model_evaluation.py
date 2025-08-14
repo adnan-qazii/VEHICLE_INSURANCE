@@ -61,3 +61,6 @@ class ModelEvaluation:
 
 
 
+	def run(self) -> None:
+		self.evaluate_model()
+		
