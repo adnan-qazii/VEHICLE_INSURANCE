@@ -4,7 +4,7 @@ from components.data_ingestion import DataIngestion
 from components.data_validation import DataValidation
 from components.data_transformation import DataTransformation
 from components.model_trainer import ModelTrainer
-
+from components.model_evaluation import ModelEvaluation
 
 
 class TrainingPipeline:
@@ -13,6 +13,7 @@ class TrainingPipeline:
         self.data_validation = DataValidation()
         self.data_transformation = DataTransformation()
         self.model_trainer = ModelTrainer()
+        self.model_evaluation = ModelEvaluation()
 
 
 
@@ -53,11 +54,19 @@ class TrainingPipeline:
             logging.error(f"Error occurred while starting model training: {e}")
 
 
+    def start_model_evaluation(self):
+        try:
+            logging.info("Starting model evaluation process")
+            self.model_evaluation.run()
+        except MyException as e:
+            logging.error(f"Error occurred while starting model evaluation: {e}")
+
+
     def run(self) -> None:
         """Run the full training pipeline in order."""
         logging.info("Training pipeline started")
         
-        self.start_model_training()
+        self.start_model_evaluation()
         logging.info("Training pipeline finished successfully")
 
             
