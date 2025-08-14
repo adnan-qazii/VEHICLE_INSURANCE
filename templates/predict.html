@@ -4,13 +4,34 @@
     <p style="font-size:1.1rem; color:#444;">Enter customer details below and get instant predictions!</p>
     <form id="predictForm" style="margin-top:1.5rem;">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-            <input type="text" name="Gender" placeholder="Gender (Male/Female)" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
+            <select name="Gender" required class="btn" style="background:#e3f2fd; color:#1976d2;">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
             <input type="number" name="Age" placeholder="Age" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
-            <input type="number" name="Driving_License" placeholder="Driving License (0/1)" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
+            <select name="Driving_License" required class="btn" style="background:#e3f2fd; color:#1976d2;">
+                <option value="">Driving License</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
             <input type="number" name="Region_Code" placeholder="Region Code" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
-            <input type="number" name="Previously_Insured" placeholder="Previously Insured (0/1)" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
-            <input type="text" name="Vehicle_Age" placeholder="Vehicle Age (< 1 Year/> 2 Years)" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
-            <input type="text" name="Vehicle_Damage" placeholder="Vehicle Damage (Yes/No)" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
+            <select name="Previously_Insured" required class="btn" style="background:#e3f2fd; color:#1976d2;">
+                <option value="">Previously Insured</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+            <select name="Vehicle_Age" required class="btn" style="background:#e3f2fd; color:#1976d2;">
+                <option value="">Vehicle Age</option>
+                <option value="< 1 Year">&lt; 1 Year</option>
+                <option value="1-2 Year">1-2 Year</option>
+                <option value="> 2 Years">&gt; 2 Years</option>
+            </select>
+            <select name="Vehicle_Damage" required class="btn" style="background:#e3f2fd; color:#1976d2;">
+                <option value="">Vehicle Damage</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
             <input type="number" name="Annual_Premium" placeholder="Annual Premium" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
             <input type="number" name="Policy_Sales_Channel" placeholder="Policy Sales Channel" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
             <input type="number" name="Vintage" placeholder="Vintage" required class="btn" style="background:#e3f2fd; color:#1976d2;"/>
