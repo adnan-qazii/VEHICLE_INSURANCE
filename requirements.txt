@@ -8,3 +8,4 @@ scikit-learn
 pyyaml
 dill
 imblearn
+fastapi
