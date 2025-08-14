@@ -161,9 +161,10 @@ class DataTransformation:
 
 
 
-    def initiate_data_transformation(self, target_column: str = "target"):
+    def initiate_data_transformation(self):
+        target_column = read_yaml_file("schema.yaml").get("target_column")
         """
-        Transforms train and test data, saves numpy arrays in data_transformation folder under latest timestamp.
+        Transforms train and test data, saves numpy arrays and transformed CSVs in data_transformation/csv under latest timestamp.
         """
         try:
             logging.info("Data Transformation Started !!!")
@@ -188,18 +189,19 @@ class DataTransformation:
             input_feature_test_arr = preprocessor.transform(input_feature_test_df)
             logging.info("Transformation done end to end to train-test df.")
 
-            # Optionally apply SMOTE or other balancing here if needed
             # Concatenate features and target
             train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
             test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
             logging.info("feature-target concatenation done for train-test df.")
 
-            # Save numpy arrays in data_transformation folder under latest timestamp
-            transformation_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(self.train_df.attrs.get('filepath_or_buffer', '')))), "data_transformation")
-            # Fallback to artifact_dir if above fails
-            if not os.path.exists(transformation_dir):
-                transformation_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "artifacts", "data_transformation")
+            # Save numpy arrays and transformed CSVs in correct timestamped directory
+            base_dir = "artifacts"
+            timestamps = [d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))]
+            latest_timestamp = sorted(timestamps)[-1]
+            transformation_dir = os.path.join(base_dir, latest_timestamp, "data_transformation")
+            csv_dir = os.path.join(transformation_dir, "csv")
             os.makedirs(transformation_dir, exist_ok=True)
+            os.makedirs(csv_dir, exist_ok=True)
             train_np_path = os.path.join(transformation_dir, "train.npy")
             test_np_path = os.path.join(transformation_dir, "test.npy")
             np.save(train_np_path, train_arr)
@@ -207,8 +209,16 @@ class DataTransformation:
             logging.info(f"Saved train numpy array at: {train_np_path}")
             logging.info(f"Saved test numpy array at: {test_np_path}")
 
+            # Save transformed train and test as CSV
+            train_csv_path = os.path.join(csv_dir, "train_transformed.csv")
+            test_csv_path = os.path.join(csv_dir, "test_transformed.csv")
+            pd.DataFrame(train_arr).to_csv(train_csv_path, index=False)
+            pd.DataFrame(test_arr).to_csv(test_csv_path, index=False)
+            logging.info(f"Saved transformed train CSV at: {train_csv_path}")
+            logging.info(f"Saved transformed test CSV at: {test_csv_path}")
+
             logging.info("Data transformation completed successfully")
-            return train_np_path, test_np_path
+            return train_np_path, test_np_path, train_csv_path, test_csv_path
         except Exception as e:
             logging.error(f"Error in initiate_data_transformation: {e}")
             raise MyException(e, sys)
@@ -218,3 +228,5 @@ class DataTransformation:
         self.prepare_data_transformation()
         self.initiate_data_transformation()
         
+
+
