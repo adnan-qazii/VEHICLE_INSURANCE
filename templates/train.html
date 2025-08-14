@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>🌲 Train Model</h1>
+    <p style="font-size:1.1rem; color:#444;">Click the button below to initiate the full training pipeline.<br>
+    <b>Training will use the latest available data and update the model for predictions.</b></p>
+    <form method="get" action="/train">
+        <button type="submit" class="btn">Start Training</button>
+    </form>
+    {% if message %}
+        <div style="margin-top:1.5rem; color:#388e3c; font-weight:bold;">{{ message }}</div>
+    {% endif %}
+    <img src="https://img.icons8.com/color/96/000000/flow-chart.png" style="margin:2rem auto; display:block;"/>
+{% endblock %}
