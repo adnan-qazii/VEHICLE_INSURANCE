@@ -1,7 +1,6 @@
 
 import sys
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score ,classification_report
 from logger import logging
 from exception import MyException
 import numpy as np
@@ -55,4 +54,12 @@ class ModelTrainer():
         except Exception as e:
             logging.error(f"Error in model training: {e}")
             raise MyException(e, sys)
+        
 
+
+    def run(self):
+        self.initiate_model_training()
+
+
+run= ModelTrainer()
+run.run()
