@@ -68,7 +68,7 @@ class TrainingPipeline:
         self.start_data_ingestion()
         self.start_data_validation()
         self.start_data_transformation()
-        self.start_model_training()
+        #self.start_model_training()
         self.start_model_evaluation()
         logging.info("Training pipeline finished successfully")
 

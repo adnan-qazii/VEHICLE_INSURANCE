@@ -103,7 +103,6 @@ val.start_data_validation()
   
 
 
-print("hello world")
   #testing training pipeline
 from pipeline.training_pipeline import TrainingPipeline
 

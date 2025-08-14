@@ -60,6 +60,3 @@ class ModelTrainer():
     def run(self):
         self.initiate_model_training()
 
-
-run= ModelTrainer()
-run.run()
