@@ -95,9 +95,11 @@ val.validate_number_of_columns()
 
 #testing data validation in training pipeline
 
-'''
-from pipeline.training_pipeline import TrainingPipeline
+'''from pipeline.training_pipeline import TrainingPipeline
 
 val = TrainingPipeline()
 val.start_data_validation()
 '''
+
+
+
