@@ -106,9 +106,9 @@ class DataValidation:
                     status = False
 
             if status:
-                logging.info("✔ Both train and test match schema column count, names, and required types.")
+                logging.info(" Both train and test match schema column count, names, and required types.")
             else:
-                logging.error("✘ Train or test failed schema column validation.")
+                logging.error(" Train or test failed schema column validation.")
             return status
 
         except Exception as e:
