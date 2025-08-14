@@ -10,3 +10,4 @@ dill
 imblearn
 fastapi
 jinja2
+uvicorn

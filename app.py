@@ -6,6 +6,8 @@ import pandas as pd
 import os
 from pipeline.prediction_pipeline import PredictionPipeline
 from pipeline.training_pipeline import TrainingPipeline
+from constants import APP_HOST, APP_PORT
+from uvicorn import run as app_run
 
 app = FastAPI()
 app.add_middleware(
@@ -52,4 +54,4 @@ async def predict(request: Request):
 
 
 if __name__ == "__main__":
-	app.run(host="0.0.0.0", port=8000, debug=True)
+	app_run(app, host=APP_HOST, port=APP_PORT)
