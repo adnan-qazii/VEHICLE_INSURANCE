@@ -1,6 +1,4 @@
 import sys
-import os
-import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 from configration.mongo_db_connection import MongoDBConnection
