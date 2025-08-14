@@ -9,3 +9,4 @@ pyyaml
 dill
 imblearn
 fastapi
+jinja2
