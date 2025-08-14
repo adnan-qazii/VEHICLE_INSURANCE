@@ -14,8 +14,11 @@ class DataValidation:
     Loads the latest train/test datasets under artifacts/<timestamp>/dataingestion/split
     and validates them against a schema.yaml.
     """
+    def __init__(self):
+        "initialized "
 
-    def __init__(self, artifacts_dir: str = "artifacts", schema_path: str = "schema.yaml"):
+
+    def prepare_data_validation(self, artifacts_dir: str = "artifacts", schema_path: str = "schema.yaml"):
         try:
             self.schema_path = schema_path
             base_dir = Path(artifacts_dir)
@@ -170,6 +173,7 @@ class DataValidation:
         Runs validation and writes report.
         Returns: (ok, report_path, report_dict)
         """
+        self.prepare_data_validation()
         report = self.validate_number_of_columns()
         path = self.save_validation_report(report)
         return report.get("ok", False), path, report

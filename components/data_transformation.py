@@ -16,6 +16,8 @@ class DataTransformation:
         Loads train and test DataFrames from the latest timestamped artifacts directory.
         Also loads the schema configuration once and stores it on the instance.
         """
+
+    def prepare_data_transformation(self):
         try:
             # Load schema once and keep it
             schema_path = "schema.yaml"
@@ -213,5 +215,6 @@ class DataTransformation:
 
 
     def run(self):
+        self.prepare_data_transformation()
         self.initiate_data_transformation()
         
