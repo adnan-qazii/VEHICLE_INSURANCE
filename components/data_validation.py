@@ -43,79 +43,74 @@ class DataValidation:
             logging.error(f"Error in DataValidation initialization: {e}")
             raise MyException(e, sys)
 
-    def validate_number_of_columns(self) -> bool:
-        """
-        Validates that both train and test DataFrames contain all numerical and categorical columns as per schema.yaml.
-        Logs missing columns for each DataFrame and returns True only if all required columns are present.
-        """
-        try:
-            schema = read_yaml_file("schema.yaml")
-            numerical_columns = schema.get("numerical_columns", [])
-            categorical_columns = schema.get("categorical_columns", [])
-            if not numerical_columns and not categorical_columns:
-                logging.error("No numerical or categorical columns found in schema.yaml.")
-                return False
 
-            status = True
-            for df_name, df in zip(["train", "test"], [self.train_df, self.test_df]):
-                missing_numerical = [col for col in numerical_columns if col not in df.columns]
-                missing_categorical = [col for col in categorical_columns if col not in df.columns]
 
-                if missing_numerical:
-                    logging.warning(f"{df_name.capitalize()} data missing numerical columns: {missing_numerical}")
-                    status = False
-                if missing_categorical:
-                    logging.warning(f"{df_name.capitalize()} data missing categorical columns: {missing_categorical}")
-                    status = False
 
-            if status:
-                logging.info("Both train and test data contain all required numerical and categorical columns.")
-            else:
-                logging.error("Train or test data missing required columns as per schema.yaml.")
-            return status
-        except Exception as e:
-            logging.error(f"Exception during column validation: {e}")
-            raise MyException(e, sys)
-        
-    def check_numerical_and_categorical_columns(self) -> bool:
-        """
-        Checks if train and test data have all numerical and categorical columns as per schema.yaml.
-        Returns True if all columns exist, else logs missing columns and returns False.
-        """
-        try:
-            schema = read_yaml_file("schema.yaml")
-            numerical_columns = schema.get("numerical_columns", [])
-            categorical_columns = schema.get("categorical_columns", [])
-            status = True
+def validate_number_of_columns(self) -> bool:
+    """
+    Validates that BOTH train and test have:
+    1. Same number of columns as schema.yaml
+    2. Same column names as schema.yaml
+    3. All required numerical & categorical columns present
+    """
+    try:
+        schema = read_yaml_file("schema.yaml")
 
-            for df_name, df in zip(["train", "test"], [self.train_df, self.test_df]):
-                dataframe_columns = df.columns
-                missing_numerical_columns = [col for col in numerical_columns if col not in dataframe_columns]
-                missing_categorical_columns = [col for col in categorical_columns if col not in dataframe_columns]
+        # Get all columns from schema (support list or dict)
+        schema_columns = schema.get("columns", [])
+        if isinstance(schema_columns, dict):
+            schema_columns = list(schema_columns.keys())
+        elif isinstance(schema_columns, list):
+            # Handle list of dicts: [{col: type}, {col: type}]
+            if all(isinstance(c, dict) for c in schema_columns):
+                schema_columns = [list(c.keys())[0] for c in schema_columns]
+        if not schema_columns:
+            logging.error("No 'columns' found in schema.yaml.")
+            return False
 
-                if missing_numerical_columns:
-                    logging.info(f"Missing numerical columns in {df_name} data: {missing_numerical_columns}")
-                    status = False
-                if missing_categorical_columns:
-                    logging.info(f"Missing categorical columns in {df_name} data: {missing_categorical_columns}")
-                    status = False
+        numerical_columns   = schema.get("numerical_columns", [])
+        categorical_columns = schema.get("categorical_columns", [])
 
-            return status
-        except Exception as e:
-            logging.error(f"Error during numerical/categorical column check: {e}")
-            raise MyException(e, sys)
-        
+        if not numerical_columns and not categorical_columns:
+            logging.error("No 'numerical_columns' or 'categorical_columns' found in schema.yaml.")
+            return False
 
-    
-    
+        status = True
+        for df_name, df in zip(["train", "test"], [self.train_df, self.test_df]):
+            df_cols = list(df.columns)
 
-    
+            # 1. Check number of columns
+            if len(df_cols) != len(schema_columns):
+                logging.error(f"[{df_name}] Column count mismatch: expected {len(schema_columns)}, got {len(df_cols)}")
+                status = False
 
-    def run(self):
-        # run all fxn in data validation class
+            # 2. Check exact column names match
+            if set(df_cols) != set(schema_columns):
+                missing_in_df = list(set(schema_columns) - set(df_cols))
+                extra_in_df   = list(set(df_cols) - set(schema_columns))
+                if missing_in_df:
+                    logging.warning(f"[{df_name}] Missing columns: {missing_in_df}")
+                if extra_in_df:
+                    logging.warning(f"[{df_name}] Extra columns: {extra_in_df}")
+                status = False
 
-        validation= DataValidation()
-        validation.validate_number_of_columns()
-        validation.check_numerical_and_categorical_columns()
+            # 3. Check numerical & categorical columns separately
+            missing_num = [c for c in numerical_columns if c not in df_cols]
+            missing_cat = [c for c in categorical_columns if c not in df_cols]
 
-    
+            if missing_num:
+                logging.warning(f"[{df_name}] Missing numerical columns: {missing_num}")
+                status = False
+            if missing_cat:
+                logging.warning(f"[{df_name}] Missing categorical columns: {missing_cat}")
+                status = False
+
+        if status:
+            logging.info("✔ Both train and test match schema column count, names, and required types.")
+        else:
+            logging.error("✘ Train or test failed schema column validation.")
+        return status
+
+    except Exception as e:
+        logging.error(f"Exception during validation: {e}")
+        raise MyException(e, sys)

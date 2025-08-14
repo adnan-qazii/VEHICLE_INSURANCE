@@ -79,3 +79,12 @@ start= TrainingPipeline()
 start.start_data_ingestion()
 logging.info("Training pipeline completed")
 '''
+
+
+
+
+# testing data validation
+from components.data_validation import DataValidation
+
+val = DataValidation()
+val.validate_number_of_columns()
