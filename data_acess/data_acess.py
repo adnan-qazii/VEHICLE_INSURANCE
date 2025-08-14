@@ -20,8 +20,8 @@ class DataAccess:
         try:
             if query is None:
                 query = {}
-            documents = self.mongo_db_connection.db[collection_name].find(query)
-            return pd.DataFrame(documents)
+            documents = self.mongo_db_connection.db[collection_name].find(query, {"_id": 0})
+            return pd.DataFrame(list(documents))
         except Exception as e:
             logging.error(f"Error fetching data: {e}")
             raise MyException("Error fetching data", sys) from e
