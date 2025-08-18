@@ -40,11 +40,19 @@ def train(request: Request):
 def predict_page(request: Request):
 	return templates.TemplateResponse("predict.html", {"request": request})
 
+
 @app.post("/predict")
 async def predict(request: Request):
 	try:
 		data = await request.json()
-		df = pd.DataFrame([data]) if isinstance(data, dict) else pd.DataFrame(data)
+		# Accept both single dict and list of dicts for batch prediction
+		if isinstance(data, dict):
+			df = pd.DataFrame([data])
+		elif isinstance(data, list):
+			df = pd.DataFrame(data)
+		else:
+			return JSONResponse(content={"error": "Invalid input format. Must be dict or list of dicts."}, status_code=400)
+
 		pipeline = PredictionPipeline()
 		preds = pipeline.predict_from_df(df)
 		return JSONResponse(content={"predictions": preds})
