@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 import pandas as pd
 import os
 from pipeline.prediction_pipeline import PredictionPipeline
@@ -17,7 +18,9 @@ app.add_middleware(
 	allow_methods=["*"],
 	allow_headers=["*"],
 )
+
 templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def index(request: Request):
